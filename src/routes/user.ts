@@ -12,7 +12,7 @@ userRouter.post('/sign-up', async (req: Request, res: Response) => {
         const parsedData = signupSchema.safeParse(req.body);
 
         if(!parsedData.success){
-            res.status(411).json({
+            res.status(400).json({
                 message: "Validation Error",
                 errors: parsedData.error.format()
             })
@@ -26,7 +26,7 @@ userRouter.post('/sign-up', async (req: Request, res: Response) => {
         });
 
         if(existingUser){
-            res.status(403).json({
+            res.status(409).json({
                 message: "User already exists, try signing-in"
             })
             return;
@@ -43,7 +43,7 @@ userRouter.post('/sign-up', async (req: Request, res: Response) => {
             id: user._id
         }, process.env.JWT_SECRET!);
 
-        res.status(200).json({
+        res.status(201).json({
             message: "user has signed-up",
             token: token
         });
@@ -63,7 +63,7 @@ userRouter.post('/sign-in', async (req: Request, res: Response) => {
         const parsedData = signinSchema.safeParse(req.body);
 
         if(!parsedData.success){
-            res.status(411).json({
+            res.status(400).json({
                 message: "Validation Error",
                 errors: parsedData.error.format()
             })
@@ -107,7 +107,7 @@ userRouter.post('/content', AuthMiddleware, async (req: Request, res: Response) 
     try {
         const userId = req.userId;
         const parsedData = contentSchema.safeParse({ ...req.body, userId });
-        
+
         if(!parsedData.success){
             res.status(400).json({
                 message: "Validation Error",
