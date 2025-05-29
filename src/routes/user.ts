@@ -6,7 +6,6 @@ const userRouter = Router();
 import { ContentModel, UserModel } from '../database/database';
 import { contentSchema, signinSchema, signupSchema } from '../types/types';
 import { AuthMiddleware } from '../middleware/middleware';
-import { MessageChannel } from 'worker_threads';
 
 userRouter.post('/sign-up', async (req: Request, res: Response) => {
     try {
