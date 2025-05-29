@@ -154,8 +154,24 @@ userRouter.get('/content', AuthMiddleware, async (req: Request, res: Response) =
     }
 });
 
+// this endpoint will delete entire content of the user was stored in our database
 userRouter.delete('/content', AuthMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.userId;
+        
+        await ContentModel.deleteMany({
+            userId: userId,
+        });
 
+        res.json({
+            message: "deleted content"
+        });
+    } catch(error) {
+        console.error('Error occured while deleteing content from the database, at', error);
+        res.status(500).json({
+            message: "Error while deleting content for the user"
+        });
+    };
 });
 
 userRouter.post('/brain/share', AuthMiddleware, async (req: Request, res: Response) => {
