@@ -137,6 +137,18 @@ userRouter.post('/content', AuthMiddleware, async (req: Request, res: Response) 
 
 userRouter.get('/content', AuthMiddleware, async (req: Request, res: Response) => {
 
+    const userId = req.userId;
+
+    const content = await ContentModel.find({
+        userId: userId
+    }).populate('userId', 'email');
+
+    res.status(200).json({
+        content: content
+    })
+
+
+
 });
 
 userRouter.delete('/content', AuthMiddleware, async (req: Request, res: Response) => {

@@ -23,8 +23,8 @@ const Content = new Schema({
     link: { type: String, require: true },
     type: { type: String, require: true, enum: contentType },
     tags: [{ type: Types.ObjectId, ref: 'Tag' }],
-    userId: { type: Types.ObjectId, ref: 'User', require: true }
+    userId: { type: Types.ObjectId, ref: 'users', require: true }
 });
 
 export const UserModel = mongoose.model('users', User);
-export const ContentModel = mongoose.model('contet', Content);
+export const ContentModel = mongoose.model('contents', Content);
