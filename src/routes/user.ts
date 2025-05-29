@@ -6,6 +6,7 @@ const userRouter = Router();
 import { ContentModel, UserModel } from '../database/database';
 import { contentSchema, signinSchema, signupSchema } from '../types/types';
 import { AuthMiddleware } from '../middleware/middleware';
+import { MessageChannel } from 'worker_threads';
 
 userRouter.post('/sign-up', async (req: Request, res: Response) => {
     try {
@@ -136,19 +137,22 @@ userRouter.post('/content', AuthMiddleware, async (req: Request, res: Response) 
 });
 
 userRouter.get('/content', AuthMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.userId;
 
-    const userId = req.userId;
+        const content = await ContentModel.find({
+            userId: userId
+        }).populate('userId', 'email');
 
-    const content = await ContentModel.find({
-        userId: userId
-    }).populate('userId', 'email');
-
-    res.status(200).json({
-        content: content
-    })
-
-
-
+        res.status(200).json({
+            content: content
+        })
+    } catch(error) {
+        console.error('Error while fetching contents from the database, at', error)
+        res.status(500).json({
+            message: "Error while fetching contents from database"
+        })
+    }
 });
 
 userRouter.delete('/content', AuthMiddleware, async (req: Request, res: Response) => {
