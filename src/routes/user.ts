@@ -104,7 +104,35 @@ userRouter.post('/sign-in', async (req: Request, res: Response) => {
 });
 
 userRouter.post('/content', AuthMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.userId;
+        const parsedData = contentSchema.safeParse({ ...req.body, userId });
+        
+        if(!parsedData.success){
+            res.status(400).json({
+                message: "Validation Error",
+                errors: parsedData.error.format()
+            })
+            return;
+        }
+        const { title, link, type, tags } = parsedData.data;
 
+        await ContentModel.create({
+            userId: userId,
+            title: title,
+            link: link,
+            type: type,
+            tags: tags
+        });
+        res.status(201).json({
+            message: "Content was stored in database"
+        })
+    } catch (error) {
+        console.error('Error occured while saving content to the database, at', error);
+        res.status(500).json({
+            message: "Error while stroing content to database"
+        });
+    };
 });
 
 userRouter.get('/content', AuthMiddleware, async (req: Request, res: Response) => {
