@@ -1,38 +1,14 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
 
-import { ConnectToDB } from "./database";
+import { ConnectToDB } from "./database/database";
+import userRouter from './routes/user';
 
 const app = express();
 
-app.post('/api/v1/sign-up', (req, res) => {
+// middleware for parsing user data
+app.use(express.json());
 
-});
-
-app.post('/api/v1/sign-in', (req, res) => {
-
-});
-
-app.post('/api/v1/content', (req, res) => {
-
-});
-
-app.get('/api/v1/content', (req, res) => {
-
-});
-
-app.delete('/api/v1/content', (req, res) => {
-
-});
-
-app.post('/api/v1/brain/share', (req, res) => {
-
-});
-
-app.get('/api/v1/brain/:shareLink', (req, res) => {
-
-});
+app.use('/api/v1/user', userRouter);
 
 async function StartServer(){
     await ConnectToDB();
