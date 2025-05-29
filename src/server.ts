@@ -10,10 +10,12 @@ app.use(express.json());
 
 app.use('/api/v1/user', userRouter);
 
+const PORT = process.env.PORT || 3000;
+
 async function StartServer(){
     await ConnectToDB();
-    app.listen(3000, () => {
-        console.log('your server is running on http://localhost:3000');
+    app.listen(PORT, () => {
+        console.log(`your server is running on http://localhost:${PORT}`);
     });
 };
 
