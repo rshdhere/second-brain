@@ -12,18 +12,18 @@ export async function ConnectToDB(){
 };
 
 const User = new Schema({
-    email: {type: String, require:true, unique: true},
-    password: {type: String, require:true}
+    email: {type: String, required:true, unique: true},
+    password: {type: String, required:true}
 });
 
 const contentType = ['image', 'video', 'blog', 'audio'] // extendable in future
 
 const Content = new Schema({
-    title: { type: String, require: true },
-    link: { type: String, require: true },
-    type: { type: String, require: true, enum: contentType },
+    title: { type: String, required: true },
+    link: { type: String, required: true },
+    type: { type: String, required: true, enum: contentType },
     tags: [{ type: Types.ObjectId, ref: 'Tag' }],
-    userId: { type: Types.ObjectId, ref: 'users', require: true }
+    userId: { type: Types.ObjectId, ref: 'users', required: true }
 });
 
 export const UserModel = mongoose.model('users', User);
