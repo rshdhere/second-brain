@@ -3,9 +3,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 const userRouter = Router();
 
-import { ContentModel, UserModel } from '../database/database';
-import { contentSchema, signinSchema, signupSchema } from '../types/types';
+import { ContentModel, LinkModel, UserModel } from '../database/database';
+import { contentSchema, linkSharingSchema, signinSchema, signupSchema } from '../types/types';
 import { AuthMiddleware } from '../middleware/middleware';
+import { random } from '../utility/util';
 
 userRouter.post('/sign-up', async (req: Request, res: Response) => {
     try {
@@ -175,11 +176,88 @@ userRouter.delete('/content', AuthMiddleware, async (req: Request, res: Response
 });
 
 userRouter.post('/brain/share', AuthMiddleware, async (req: Request, res: Response) => {
+    try {
+        const userId = req.userId;
+        const parsedData = linkSharingSchema.safeParse({ ...req.body, userId });
 
+        if(!parsedData.success){
+            res.status(400).json({
+                message: "Validation Error",
+                errors: parsedData.error.format()
+            })
+            return;
+        }
+
+        const { share } = parsedData.data;
+
+        if(share){
+            const existingLink = await LinkModel.findOne({
+                userId: userId
+            });
+
+            if(existingLink){
+                res.status(201).json({
+                    message: "/share/" + existingLink.hash
+                })
+                return;
+            };
+
+            const hash = random(10)
+            const Link = await LinkModel.create({
+                hash: hash,
+                userId: userId
+            })
+
+            res.json({
+                message: "/share/" + hash
+            })
+        } else {
+            await LinkModel.deleteOne({
+                userId: userId
+            })
+
+            res.json({
+                message: "removed the link"
+            })
+        }
+        } catch(error) {
+            console.error('Error occured while generating link for the user, at', error);
+            res.status(500).json({
+                message: "Error occured while generating link"
+            })
+        }
 });
 
-userRouter.get('/brain/:shareLink', AuthMiddleware, async (req: Request, res: Response) => {
+userRouter.get('/brain/:shareLink', async (req: Request, res: Response) => {
+    try {
+        const hash = req.params.shareLink;
+    
+        const link = await LinkModel.findOne({
+            hash: hash
+        });
 
+        if(!link){
+            res.status(411).json({
+                message: "wrong link was provided"
+            })
+            return;
+        }
+
+        const content = await ContentModel.find({
+            userId: link.userId
+        });
+
+        const user = await UserModel.findOne({
+            _id: link.userId
+        })
+
+        res.status(200).json({
+            email: user?.email,
+            content: content
+        })
+    } catch (error) {
+        console.error('Error occured while fetching data from DB via a shareable link')
+    }
 });
 
 export default userRouter;

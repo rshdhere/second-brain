@@ -17,3 +17,8 @@ export const contentSchema = z.object({
     tags: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/), {message: "Invalid ObjectId format"}).optional(),
     userId: z.string().regex(/^[0-9a-fA-F]{24}$/, {message: "Invalid ObjectId format"})
 });
+
+export const linkSharingSchema = z.object({
+    share: z.boolean({message: "link's can be either true or false only"}),
+    userId: z.string().regex(/^[0-9a-fA-F]{24}$/, {message: "Invalid ObjectId format"})
+}).strict();
