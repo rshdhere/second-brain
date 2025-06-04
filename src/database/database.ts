@@ -1,6 +1,5 @@
 import 'dotenv/config';
-import mongoose from "mongoose";
-import { Schema, ObjectId } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 export async function ConnectedToDB(){
     try {
@@ -12,8 +11,18 @@ export async function ConnectedToDB(){
 }
 
 const userSchema = new Schema({
-    email: String,
-    password: String
+    email: { type: String, required: true },
+    password: {type: String, required: true}
 });
 
+const contentTags = ['twitter-post', 'youtube-video', 'youtube-short', 'instagram-reel', 'linkedin-post', 'blog', 'audio'];
+
+const contentSchema = new Schema({
+    title: { type: String, required: true },
+    link: {type: String, required: true},
+    tags: { type: String, enum: contentTags, required: true },
+    UserId: { type: Types.ObjectId, ref: 'users', required: true }
+})
+
 export const UserModel = mongoose.model('users', userSchema);
+export const ContentModel = mongoose.model('content', contentSchema);
