@@ -12,7 +12,7 @@ export async function ConnectedToDB(){
 
 const userSchema = new Schema({
     email: { type: String, required: true },
-    password: {type: String, required: true}
+    password: { type: String, required: true }
 });
 
 const contentTags = ['twitter-post', 'youtube-video', 'youtube-short', 'instagram-reel', 'linkedin-post', 'blog', 'audio'];
